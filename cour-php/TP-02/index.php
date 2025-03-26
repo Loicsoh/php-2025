@@ -14,24 +14,28 @@
             global $pdo;
 
             // verification des champs
-            if(!empty($pseudo) && !empty($mail) && !empty($mail2) && !empty($mdp) && !empty($mdp2)){
+            if(empty($pseudo) || empty($mail) ||empty($mail2) || empty($mdp) || empty($mdp2)){
                return "Tout les champs doivent etre remplis"; 
             }
 
             // verifier le pseudo
-            if (strlen($pseudo) < 255){
+            if (strlen($pseudo) > 255){
                return "Le pseudo est trop long"; 
             }
 
             $sql = "SELECT * FROM membre WHERE pseudo = :pseudo";
             $reqpseudo = $pdo->prepare($sql);
-            $reqpseudo->excecute(compact('pseudo'));
+            $reqpseudo->execute(compact('pseudo'));
             $pseudoExist = $reqpseudo->fetch();
+            // var_dump($pseudoExist);
 
-            if($pseudoEXist)
-      } } 
-      
+            if($pseudoExist){
+              return "pseudo deja utiliser";
+            }
+         
+      } 
       $error = register($pseudo, $mail, $mail2, $mdp, $mdp2);
+    }     
 ?>
 
 
