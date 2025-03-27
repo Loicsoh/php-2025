@@ -2,6 +2,8 @@
 
     require_once'database.php';
 
+    // insertion des donnees
+
     if($_SERVER['REQUEST_METHOD'] == 'POST'){
         $pseudo = htmlspecialchars($_POST['pseudo']);
         $mail = htmlspecialchars($_POST['mail']);
@@ -9,6 +11,8 @@
 
         $mdp = $_POST['mdp'];
         $mdp2 = $_POST['mdp2'];
+
+        
 
         function register($pseudo, $mail, $mail2, $mdp, $mdp2){
             global $pdo;
@@ -32,6 +36,48 @@
             if($pseudoExist){
               return "pseudo deja utiliser";
             }
+            // verifier le mail
+           if ($mail != $mail2){
+              return "Les mails ne correspondent pas"; 
+           } 
+           if (!filter_var($mail, FILTER_VALIDATE_EMAIL)){
+              return "Le mail n'est pas valide";
+           }
+
+           $sql = "SELECT * FROM membre WHERE mail = :mail";
+           $reqmail = $pdo->prepare($sql);
+           $reqmail->execute(compact('mail'));
+           $mailExist = $reqmail->fetch();
+           // var_dump($mailExist);
+
+           if($mailExist){
+            return "mail deja utiliser";
+          }
+
+          // verifier le mdp existant deja dans la base de donnees
+          $sql = "SELECT * FROM membre WHERE mdp = :mdp";
+          $reqmdp = $pdo->prepare($sql);
+          $reqmdp->execute(compact('mdp'));
+          $mdpExist = $reqmdp->fetch();
+          // var_dump($mdpExist);
+
+          if($mdpExist){
+            return "mdp deja utiliser";
+          }
+
+          // verifier le mdp
+          if ($mdp!= $mdp2){
+            return "Les mots de passe ne correspondent pas"; 
+          }
+          $mdp = sha1($mdp);
+
+
+          $sql = "INSERT INTO membre(pseudo, mail, mdp) VALUES (:pseudo, :mail, :mdp)";
+          $req = $pdo->prepare($sql);
+          $req->execute(compact('pseudo', 'mail', 'mdp'));
+          return "Inscription reussie";
+
+          
          
       } 
       $error = register($pseudo, $mail, $mail2, $mdp, $mdp2);
@@ -45,7 +91,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
+  <title>Espace Membre</title>
 </head>
 
 <body>
