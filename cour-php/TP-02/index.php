@@ -111,7 +111,7 @@
             <label for="pseudo">Pseudo :</label>
           </td>
           <td>
-            <input type="text" placeholder="Votre pseudo" id="pseudo" name="pseudo" />
+            <input type="text" placeholder="Votre pseudo" value="<?= $pseudo ?? ''?>" id="pseudo" name="pseudo" />
 
           </td>
         </tr>
@@ -120,7 +120,7 @@
             <label for="mail">Mail :</label>
           </td>
           <td>
-            <input type="text" placeholder="Votre mail" id="mail" name="mail" />
+            <input type="text" placeholder="Votre mail" value="<?= $mail ?? ''?>"  id="mail" name="mail" />
           </td>
         </tr>
         <tr>
@@ -128,7 +128,7 @@
             <label for="mail2">Confirmation du mail :</label>
           </td>
           <td>
-            <input type="text" placeholder="Confirmez votre mail" id="mail2" name="mail2" />
+            <input type="text" placeholder="Confirmez votre mail" value="<?= $mail2 ??''?>"  id="mail2" name="mail2" />
           </td>
         </tr>
         <tr>
@@ -136,7 +136,7 @@
             <label for="mdp">Mot de passe :</label>
           </td>
           <td>
-            <input type="password" placeholder="Votre mot de passe" id="mdp" name="mdp" />
+            <input type="password" placeholder="Votre mot de passe" value="<?= $mdp ?? '' ?>" id="mdp" name="mdp" />
           </td>
         </tr>
         <tr>
@@ -144,7 +144,7 @@
             <label for="mdp2">Confirmation du mot de passe :</label>
           </td>
           <td>
-            <input type="password" placeholder="Confirmez votre mdp" id="mdp2" name="mdp2" />
+            <input type="password" placeholder="Confirmez votre mdp" value="<?= $mdp ?? '' ?>" id="mdp2" name="mdp2" />
           </td>
         </tr>
         <tr>

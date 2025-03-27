@@ -46,9 +46,9 @@
         </tr>
       </thead>
       <tbody class="divide-y divide-green-100">
-        <?php
+        <!-- <?php
           foreach ($donnees as $donnee) :
-        ?>
+        ?> -->
         <tr class="hover:bg-green-50">
           <td class="px-6 py-4 whitespace-nowrap text-sm text-green-900"><?Php echo['nom'];?></td>
           <td class="px-6 py-4 whitespace-nowrap text-sm text-green-900"><?Php echo['prenom'];?>
