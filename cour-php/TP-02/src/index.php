@@ -92,11 +92,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Espace Membre</title>
+  <link href="./output.css" rel="stylesheet">
 </head>
 
 <body>
   <div align="center">
-    <h2>Inscription prof</h2>
+    <h2 class="bg-red">Inscription prof</h2>
     <br /><br />
     <form method="POST" action="">
 

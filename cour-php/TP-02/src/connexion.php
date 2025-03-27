@@ -1,3 +1,16 @@
+<?php
+  require_once'database.php';
+  function handlerpostRequest($pdo);
+
+  // verification du type de request
+  if($_SERVER['REQUEST_METHOD'] == 'POST'){
+  return Register($pdo);  
+  }
+
+  // reception des donnees du formulaire
+?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 
