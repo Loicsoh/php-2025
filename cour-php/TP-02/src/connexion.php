@@ -1,121 +1,128 @@
 <?php
 session_start();
+require_once 'database.php';
 
-require_once "database.php";
-// //recuperation des donnees du formulaires
-// $mailConnect = htmlspecialchars($_POST['mailconnect']);
-// $mdpConnect = htmlspecialchars($_POST['mdpconnect']);
-
-function handle($pdo)
+function handlePostRequest($pdo)
 {
-    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-        return "Error";
-    }
+    //verification du type de requete
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST'){
+        return;
 
-    // // Vérifiez si le formulaire a été soumis
-    $mailConnect = htmlspecialchars($_POST['mailconnect']);
-    $mdpConnect = htmlspecialchars($_POST['mdpconnect']);
-    if (empty($mailConnect) || empty($mdpConnect)) {
-        return "Tous les champs doivent etre remplis";
     }
-    return authentificateUser($pdo, $mailConnect, $mdpConnect);
-    return  "Congratulation you are connecting!!!";
+    //recuperation des donnees de formulaire
+    $mailconnect = htmlspecialchars($_POST['mailconnect']);
+    $mdpconnect = $_POST['mdpconnect'];
+    // var_dump($mdpconnect);
+    if (empty($mailconnect) || empty($mdpconnect)){
+        return "tous les champs doivent etre remplir";
+    }
+    
+    return authenticateUser($pdo, $mailconnect,$mdpconnect);
 }
-
-function authentificateUser($pdo, $mailConnect, $mdpConnect)
+function authenticateUser($pdo, $mailconnect,$mdpconnect)
 {
-    $sql = "SELECT * FROM membres WHERE mail=:mailConnect ";
+    //verification du mail
+
+    $sql = "SELECT * FROM membres WHERE mail = :mailconnect";
     $reqMail = $pdo->prepare($sql);
-    $reqMail->execute(compact('mailConnect'));
+    $reqMail->execute(compact('mailconnect'));
     $mailExist = $reqMail->rowCount();
-    // var_dump($mailExist);
-    if (!$mailExist) {
-        return "Ce mail n'existe pas";
+    if (!$mailExist){
+        return "se mail est introuvable";
     }
-    //verification du password
-    $userInfos =   $reqMail->fetch();
-    echo "<pre>";
-    var_dump($userInfos['mdp']);
-    echo "</pre>";
+    $userinfo = $reqMail->fetch();
 
-    if (password_verify($mdpConnect, $userInfos['mdp'])) {
-        return "ok";
+    //aligner le code
+
+    // echo "<pre>";
+    //    var_dump($userinfo);
+    // // (afficher uniquement le mot de passe)
+    // print_r($userinfo['mdp']);
+    // echo "</pre>";
+  
+    // die();
+
+    if(!password_verify($mdpconnect,$userinfo['mdp'])){
+        return "Mot de passe incorrect";
     }
 
-    $_SESSION['id'] = $userInfos['id'];
-    $_SESSION['pseudo'] = $userInfos['pseudo'];
-    $_SESSION['mail'] = $userInfos['mail'];
+    // $_SESSION['userinfo'] = $userinfo;
 
-    header("Location: profil.php?id=". $_SESSION['id'] );
+    // return 'success';
+    
+    //deffinition des variable session
+
+    $_SESSION['id']= $userinfo['id'];
+    $_SESSION['pseudo']= $userinfo['pseudo'];
+    $_SESSION['mail']= $userinfo['mail'];
+    header("Location: profil.php?id=" .$_SESSION['id']);
     exit();
-    // return "Congratulation you are connecting!!!";
+        // return 'success';
 }
-$error = handle($pdo);
+    $erreur = handlePostRequest($pdo);
+
 ?>
+
+
+
+
+
+
+
+
 
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
-<link href="https://fonts.googleapis.com/css2?family=Italianno&family=Parkinsans:wght@300..800&family=Playwrite+HU:wght@100..400&family=Playwrite+PE+Guides&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha512-Avb2QiuDEEvB4bZJYdft2mNjVShBftLdPG8FJ0V7irTLQ8Uo0qcPxh4Plq7G5tGm0rU+1SPhVotteLpBERwTkw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <link rel="stylesheet" href="./style/style.css">
-    <title><?= isset($title) ? htmlspecialchars($title): "Espace membre"    ?></title>
+  <title>connection</title>
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <meta charset="utf-8">
 </head>
 
-<body class="bg-green-100 pt-[100px] font-family-Poppins text-[16px]">
+<body class="bg-green-100 pt-[100px] font-family-Poppins">
+  <div align="center">
+    <h2  class="text-4xl font-bold text-green-900 text-center mb-6">Connexion</h2>
+    <br /><br />
+    <form method="POST" action="" class="bg-white p-6 rounded shadow max-w-lg mx-auto">
+        
+        <?php if (isset($erreur)) : ?>
+            
+    <p id="message" 
+       class="bg-red-500 w-full border border-green-300 p-2 rounded text-white font-bold">
+        <?= htmlspecialchars($erreur) ?>
+    </p>
+<?php endif; ?>
 
-<h2 class=" text-4xl font-bold text-green-900 text-center mb-6">Connexion</h2>
+         
+   
 
-<form method="POST" action="" class="bg-white p-6 rounded shadow max-w-lg mx-auto">
-    <div class="flex flex-col gap-[5px]">
-        <?php
-        if (isset($error)) {
-            echo '<p class="bg-red-500 w-full border border-green-300 p-2 rounded focus:outline-none focus:border-green-500 text-white font-bold">' . $error . '</p>';
+    <label for="mailconnect" class="">Mail :</label>
+
+      <!-- E-mail : <input type="email" name="mailconnect" placeholder="Mail" /> <br><br> -->
+      <input type="mail" placeholder="mail" id="mailconnect" name="mailconnect" value="<?= $mailconnect ?? '' ?>"  class="w-full border border-green-300 p-2 rounded focus:outline-none focus:border-green-500" />
+
+      <label for="mdpconnect" class="">Mot de passe :</label>
+
+      <input type="password" placeholder="mot de passe" id="mdpconnect" name="mdpconnect" value="<?= $mdpconnect ?? '' ?>" class="w-full border border-green-300 p-2 rounded focus:outline-none focus:border-green-500" />
+      <!-- PassWord : <input type="password" name="mdpconnect" placeholder="Mot de passe" /> -->
+      <br /><br />
+      <input type="submit" value="Se connecter !" class="w-full border border-green-300 p-2 rounded focus:outline-none focus:border-green-500 bg-green-100 cursor-pointer"/>
+    </form>
+   
+  </div>
+  <script>
+    // Faire disparaître le message après 5 secondes
+    setTimeout(function() {
+        var message = document.getElementById("message");
+        if (message) {
+            message.style.transition = "opacity 0.5s ease";
+            message.style.opacity = "0";
+            setTimeout(() => message.remove(), 500); // Supprime complètement après la transition
         }
+    }, 5000);
+</script>
 
-        ?>
-        <div class="text-left flex flex-col gap-[7px]">
-            <label for="mail">Mail :</label>
+</body>
 
-            <input type="text" placeholder="Votre mail" id="mail" value="<?php echo $mailConnect ?? ""  ?>" name="mailconnect" class="w-full border border-green-300 p-2 rounded focus:outline-none focus:border-green-500" />
-        </div>
+</html>
 
-        <!-- <div class="text-left flex flex-col gap-[7px]">
-            <label for="mdp">Password :</label>
-
-            <input type="password" placeholder="mot de passe" id="mdp" name="mdpconnect" value="<?php echo $mdpConnect ?>" class="w-full border border-green-300 p-2 rounded focus:outline-none focus:border-green-500" />
-        </div> -->
-
-        <div class="text-left flex flex-col gap-[7px]">
-            <label for="mdp">Password :</label>
-            <div class="relative">
-                <input type="text" placeholder="enter your password" id="mdp" name="mdpconnect"
-                    class="w-full border border-green-300 p-2 rounded focus:outline-none focus:border-green-500"
-                    value=" " />
-
-                <!-- <i class="fa fa-eye absolute right-3 top-3 cursor-pointer text-gray-500" id="togglePassword"></i> -->
-                <!-- <i class="far fa-eye absolute right-3 top-3 cursor-pointer text-gray-500" id="togglePassword"></i> -->
-                <i class="fa-solid fa-eye  absolute right-3 top-3 cursor-pointer text-gray-500" id="togglePassword"></i>
-            </div>
-        </div>
-
-        <div class="text-left flex flex-col gap-[7px]">
-
-            <input type="submit" value="Se connecter !" class="w-full border border-green-300 p-2 rounded focus:outline-none focus:border-green-500 bg-green-100 " />
-        </div>
-    </div>
-</form>
-
-<script src="./javascript/script-index.js"></script>
-
-
-      </body>
-      </html>
