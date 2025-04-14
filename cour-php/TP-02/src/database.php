@@ -1,6 +1,6 @@
 <?php
 $hostname="127.0.0.1";
-$database="cour_php";
+$database="membres";
 
 $dsn="mysql:host=$hostname;dbname=$database";
 $username = "root";
@@ -14,3 +14,5 @@ try {
   } catch (Exception $e) {
     echo "Erreur : " . $e->getMessage();
   }
+
+  ?>

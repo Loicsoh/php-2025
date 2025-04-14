@@ -33,7 +33,7 @@
         // print_r($userinfo['mdp']);
         // echo "</pre>";
         // die();
-        if (! password_verify($mdpconnect, $userinfo['mdp'])) {
+        if (!password_verify($mdpconnect, $userinfo['mdp'])) {
             return 'Mauvais mot de passe';
         }
 
@@ -42,12 +42,17 @@
         $_SESSION['pseudo'] = $userinfo['pseudo'];
         $_SESSION['mail']   = $userinfo['mail'];
         // 05-Redirection vers la page dedition
-        switch ($_session['role']){
+
+        $_SESSION['role'] = $userinfo['role'];
+        $_SESSION['auth'] = $userinfo;
+        
+        // redirection selon le role d'utilisateur
+        switch ($_SESSION['role']){
             case 'admin':
                 header("Location: admin/adminuser.php");
                 break;
             case 'user':
-                header("Location: profil.php" . $_SESSION['id']);
+                header("Location: profil.php?=" . $_SESSION['id']);
                 break;
                 default:
                 return "role inconu";
